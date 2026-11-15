@@ -114,7 +114,9 @@ public actor MCPClient {
             "Accept": "application/json, text/event-stream"
         ]
         if let sessionID { headers["Mcp-Session-Id"] = sessionID }
-        if let token = try? await tokenProvider(), let token, !token.isEmpty {
+        // `try?` wraps the provider's `String?` in another optional.
+        if let maybeToken = try? await tokenProvider(),
+           let token = maybeToken, !token.isEmpty {
             headers["Authorization"] = "Bearer \(token)"
         }
 
