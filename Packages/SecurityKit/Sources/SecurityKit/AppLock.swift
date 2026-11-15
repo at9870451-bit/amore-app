@@ -1,5 +1,5 @@
+import CoreKit
 import Foundation
-import SecurityKit
 
 /// App-level Face ID gate. Kept in SecurityKit so both the app and previews can
 /// inject the same behaviour; the UI only ever asks `isLocked`.
