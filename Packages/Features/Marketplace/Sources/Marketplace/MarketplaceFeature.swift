@@ -1,6 +1,7 @@
 import DesignSystem
 import PluginKit
 import SwiftUI
+import MarketplaceKit
 
 /// Marketplace list. Every row comes from `RegistryClient`; nothing here is
 /// placeholder content — an empty state means the index really was empty.
