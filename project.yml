@@ -28,10 +28,10 @@ packages:
 targets:
   Amore:
     type: application
-    platform: [iOS, macOS]
+    # 单平台先跑通 CI；多平台见 docs/ARCHITECTURE.md（XcodeGen 需 ≥2.40）
+    platform: iOS
     deploymentTarget:
       iOS: "18.0"
-      macOS: "15.0"
     sources:
       - path: App
     info:
