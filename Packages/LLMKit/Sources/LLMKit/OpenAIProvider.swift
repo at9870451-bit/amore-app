@@ -1,6 +1,7 @@
 import CoreKit
 import Foundation
 import NetworkKit
+import SecurityKit
 
 /// OpenAI Chat Completions. Also the base for OpenAI-compatible endpoints
 /// (Ollama, LM Studio, OpenRouter…), which only differ in base URL.
