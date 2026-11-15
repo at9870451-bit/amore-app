@@ -9,7 +9,7 @@ public protocol HTTPCache: Sendable {
 
 /// Writes one JSON file per cache key under Caches/AmoreHTTPCache. A 304 keeps
 /// the previous body; a fresh 200 replaces it.
-public actor DiskHTTPCache {
+public actor DiskHTTPCache: HTTPCache {
     private let directory: URL
     private let fileManager = FileManager.default
 
@@ -57,24 +57,22 @@ public actor DiskHTTPCache {
     }
 }
 
-public final class InMemoryHTTPCache: HTTPCache, @unchecked Sendable {
-    private let lock = NSLock()
+/// Actor instead of NSLock: Swift 6 forbids `lock()`/`unlock()` inside async
+/// functions, and every method here is async.
+public actor InMemoryHTTPCache: HTTPCache {
     private var storage: [String: HTTPCacheEntry] = [:]
 
     public init() {}
 
     public func entry(for key: String) async throws -> HTTPCacheEntry? {
-        lock.lock(); defer { lock.unlock() }
-        return storage[key]
+        storage[key]
     }
 
     public func store(_ entry: HTTPCacheEntry, for key: String) async throws {
-        lock.lock(); defer { lock.unlock() }
         storage[key] = entry
     }
 
     public func removeAll() async throws {
-        lock.lock(); defer { lock.unlock() }
         storage.removeAll()
     }
 }
