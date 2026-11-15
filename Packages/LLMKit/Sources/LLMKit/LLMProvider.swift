@@ -1,5 +1,7 @@
 import CoreKit
 import Foundation
+import SecurityKit
+import NetworkKit
 
 public enum LLMError: LocalizedError, Sendable, Equatable {
     case missingAPIKey(provider: String)
@@ -136,7 +138,7 @@ public actor ProviderRegistry {
             kind: .openAI,
             displayName: "OpenAI",
             model: "gpt-4o-mini",
-            baseURL: Self.url("https://api.openai.com"),
+            baseURL: ProviderRegistry.url("https://api.openai.com"),
             keychainAccount: "openai"
         ),
         ProviderConfig(
@@ -144,7 +146,7 @@ public actor ProviderRegistry {
             kind: .anthropic,
             displayName: "Anthropic",
             model: "claude-sonnet-4-20250514",
-            baseURL: Self.url("https://api.anthropic.com"),
+            baseURL: ProviderRegistry.url("https://api.anthropic.com"),
             keychainAccount: "anthropic"
         ),
         ProviderConfig(
@@ -152,7 +154,7 @@ public actor ProviderRegistry {
             kind: .compatible,
             displayName: "Ollama (local)",
             model: "llama3.1",
-            baseURL: Self.url("http://127.0.0.1:11434"),
+            baseURL: ProviderRegistry.url("http://127.0.0.1:11434"),
             keychainAccount: "ollama"
         )
     ]
