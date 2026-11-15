@@ -74,8 +74,12 @@ public enum MarketplaceError: LocalizedError, Sendable, Equatable {
 
 /// Reads registry data with ETag caching, and reports GitHub quota honestly.
 public actor RegistryClient {
+    /// Non-optional on purpose: `URL(string:)` returns `URL?`, and these feed
+    /// `URLComponents(url:resolvingAgainstBaseURL:)` which requires a real URL.
     public static let officialIndexURL = URL(string: "https://raw.githubusercontent.com/amore-plugins/registry/main/index.json")
-    public static let communitySearchURL = URL(string: "https://api.github.com/search/repositories?q=topic:amore-plugin&sort=stars")
+        ?? URL(fileURLWithPath: "/registry/index.json")
+    public static let communitySearchURL = URL(string: "https://api.github.com/search/repositories")
+        ?? URL(fileURLWithPath: "/search/repositories")
 
     private let http: HTTPClient
     private let logger: AmoreLogger
