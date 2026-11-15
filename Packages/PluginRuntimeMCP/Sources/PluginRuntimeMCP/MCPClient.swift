@@ -114,9 +114,9 @@ public actor MCPClient {
             "Accept": "application/json, text/event-stream"
         ]
         if let sessionID { headers["Mcp-Session-Id"] = sessionID }
-        // `try?` wraps the provider's `String?` in another optional.
-        if let maybeToken = try? await tokenProvider(),
-           let token = maybeToken, !token.isEmpty {
+        // Since SE-0230 `try?` flattens an already-optional result, so this is
+        // one level of optional, not two.
+        if let token = try? await tokenProvider(), !token.isEmpty {
             headers["Authorization"] = "Bearer \(token)"
         }
 
