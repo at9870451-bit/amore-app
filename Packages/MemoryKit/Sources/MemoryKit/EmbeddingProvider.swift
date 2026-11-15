@@ -25,7 +25,11 @@ public protocol EmbeddingProvider: Sendable {
 
 /// Apple's sentence embeddings. English-only on most systems, so callers pair
 /// it with a fallback when `embed` throws.
-public struct NLEmbeddingProvider: EmbeddingProvider {
+/// `NLEmbedding` is not declared `Sendable`, but the model is immutable once
+/// loaded and `vector(for:)` performs no mutation, so sharing one instance
+/// across tasks is safe. The unchecked conformance records that judgement
+/// instead of hiding it behind a lock we do not need.
+public struct NLEmbeddingProvider: EmbeddingProvider, @unchecked Sendable {
     public let dimensions: Int
     private let embedding: NLEmbedding
 
