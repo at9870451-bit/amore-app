@@ -20,20 +20,29 @@ public struct Signposts: Sendable {
 
     /// Measures an async operation. Uses `beginInterval`/`endInterval` so the
     /// duration is attributed to the operation, not the caller's stack.
+    /// `OSSignposter` only accepts `StaticString`, so the names are mapped back
+    /// to literals instead of interpolated strings.
+    private static func signpostName(_ name: Name) -> StaticString {
+        switch name {
+        case .llmFirstToken:   return "llm.first_token"
+        case .llmStream:       return "llm.stream"
+        case .toolExecution:   return "tool.execution"
+        case .pluginInstall:   return "plugin.install"
+        case .memoryRetrieval: return "memory.retrieval"
+        }
+    }
+
     public func measure<T: Sendable>(
         _ name: Name,
         _ operation: () async throws -> T
     ) async rethrows -> T {
-        let state = signposter.beginInterval(name.rawValue)
-        defer { signposter.endInterval(name.rawValue, state) }
+        let key = Self.signpostName(name)
+        let state = signposter.beginInterval(key)
+        defer { signposter.endInterval(key, state) }
         return try await operation()
     }
 
-    public func event(_ name: Name, detail: String = "") {
-        if detail.isEmpty {
-            signposter.emitEvent(name.rawValue)
-        } else {
-            signposter.emitEvent("\(name.rawValue).\(detail)")
-        }
+    public func event(_ name: Name) {
+        signposter.emitEvent(Self.signpostName(name))
     }
 }
