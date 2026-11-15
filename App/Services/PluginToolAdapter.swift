@@ -1,6 +1,7 @@
 import AgentKit
 import CoreKit
 import Foundation
+import PluginKit
 import PluginRuntimeJS
 
 /// Bridges one sandboxed JS tool into the agent's tool registry.
