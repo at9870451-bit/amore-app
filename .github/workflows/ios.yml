@@ -1,0 +1,57 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen || true
+
+      - name: Generate project
+        run: |
+          cd Amore
+          xcodegen generate
+
+      - name: Build (unsigned)
+        run: |
+          cd Amore
+          set -o pipefail
+          xcodebuild \
+            -project Amore.xcodeproj \
+            -scheme Amore \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build 2>&1 | tee xcodebuild.log | tail -200
+
+      - name: Package IPA
+        if: always()
+        run: |
+          cd Amore
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          if [ -n "$APP" ]; then
+            mkdir -p Payload
+            cp -r "$APP" Payload/
+            zip -r -y Amore.ipa Payload
+            ls -lh Amore.ipa
+          else
+            echo "no .app produced"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: amore-build
+          path: |
+            Amore/Amore.ipa
+            Amore/xcodebuild.log
