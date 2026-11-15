@@ -1,6 +1,7 @@
 import CoreKit
 import Foundation
 import NetworkKit
+import SecurityKit
 
 /// Anthropic Messages API (streaming).
 public struct AnthropicProvider: LLMProvider {
@@ -224,7 +225,7 @@ struct AnthropicStreamParser {
                 output.append(.usage(Usage(inputTokens: usage.input_tokens,
                                            outputTokens: usage.output_tokens)))
             }
-            if let reason = envelope.delta?.stop_reason ?? envelope.stop_reason {
+            if let reason = envelope.delta?.stop_reason {
                 output.append(.finish(Self.finishReason(reason)))
                 finished = true
             }
